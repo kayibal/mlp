@@ -52,7 +52,7 @@ point point::operator+(const point& right){
     point sum(0.0,0.0);
     sum.setX(x+right.x);
     sum.setY(y+right.y);
-    sum.setY(z+right.z);
+    sum.setZ(z+right.z);
     return sum;
 }
 point point::operator-(const point& right){

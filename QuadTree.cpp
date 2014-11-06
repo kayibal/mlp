@@ -37,7 +37,6 @@ int QuadTree::getCalculations(){
 }
 
 void QuadTree::computeMass(Node* n){
-    std::cout << "computeMass \n";
     if(n->getParticle() != nullptr){
         //external node
         Particle* p = n->getParticle();
@@ -45,19 +44,23 @@ void QuadTree::computeMass(Node* n){
         n->setCenterOfMass(p->getX(), p->getY());
     } else {
         for(int i = 0; i < 4; i++){
-            computeMass(n->getChild(i));
+            if(n->getChild(i) != nullptr)
+                computeMass( n->getChild(i) );
         }
         float mass = 0;
         for (int i = 0; i < 4; i++){
-            mass += n->getChild(i)->getMass();
+            if(n->getChild(i) != nullptr)
+                mass += n->getChild(i)->getMass();
         }
         point com(0,0);
         for (int i = 0; i < 4; i++){
-            point* p = n->getChild(i)->getCenterOfMass();
-            float p_mass = n->getChild(i)->getMass();
-            com = com + (*p)*p_mass;
-            com = com * (1/mass);
+            if(n->getChild(i) != nullptr){
+                point* p = n->getChild(i)->getCenterOfMass();
+                float p_mass = n->getChild(i)->getMass();
+                com = com + (*p)*p_mass;
+            }
         }
+        com = com * (1/mass);
         n->setMass(mass);
         n->setCenterOfMass(com.getX(),com.getY());
     }
@@ -75,12 +78,13 @@ void QuadTree::insertParticle(Particle* p){
         size++;
     }
 }
-QuadTree::QuadTree(float l, float g, float t){
+QuadTree::QuadTree(float l, float g, float t, float timestep){
     root = new Node(0,0,l,l);
     length = l;
     gravitation_constant = g;
     particles = nullptr;
     theta = t;
+    dt = timestep;
     
 }
 void QuadTree::updateForces(){
@@ -96,6 +100,20 @@ void QuadTree::updateForces(){
     }
      */
 }
+void QuadTree::updateVelocities(float dt){
+    for(int i = 0; i < particles->size(); i++){
+        Particle* temp = &(*particles)[i];
+        temp->updateVelocity(dt);
+    }
+}
+
+void QuadTree::updatePositions(float dt){
+    for(int i = 0; i < particles->size(); i++){
+        Particle* temp = &(*particles)[i];
+        temp->updatePos(dt);
+    }
+}
+
 std::vector<Particle>* QuadTree::getParticles(){
     return particles;
 }
@@ -123,9 +141,20 @@ void QuadTree::build(){
             std::cout << &i->getX() << " " <<"\n";
             insertParticle(*i);
         }*/
-        std::cout << "computing masses \n";
         computeMass(root);
     } else {
         throw "particles are not set exception";
     }
+}
+
+void QuadTree::leapfrog(){
+    updatePositions(0.5*dt);
+    updateForces();
+    updateVelocities(0.5*dt);
+    updatePositions(0.5*dt);
+}
+
+void QuadTree::forward(){
+    build(); //inserting all particles into tree
+    leapfrog(); //calculate all forces and move particles
 }

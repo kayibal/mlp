@@ -32,14 +32,17 @@ QuadTree* tree;
 
 
 //Configurations
-float timestep = 0.00125;
-float gravitation_constant = 6.67e-11;
-int n = 500;
-int max_mass = 1000000;
-int seed = 1342;
-float theta = 0;
+float timestep = 1;
+float gravitation_constant = 6.67e-8;
+int n = 1000;
+int max_mass = 100000;
+int seed = 1334242;
+float theta = 0.5;
 //Integration method 1 is more accurate 0 is faster
 int mode = 0;
+
+float zoomfacor = 1.1;
+
 
 std::vector<Particle> particles(n);
 void DrawCircle(float cx, float cy, float r, int num_segments)
@@ -57,6 +60,7 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
 	}
 	glEnd();
 }
+
 void drawParticle(point p, float r){
     //a particle will be a simple rectangle for now
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -73,14 +77,16 @@ void render()
 }
 
 void update(){
-    tree->updateForces();
-    std::cout << tree->getCalculations() << "\n";
-    for(int i = 0; i < particles.size(); i++){
-        //use verlet method
-        particles[i].move(timestep,mode);
-        //particles[i].print();
+    tree->forward();
+}
+void mouse(int button, int state, int x, int y)
+{
+    // Wheel reports as button 3(scroll up) and button 4(scroll down)
+    if(button == GLUT_LEFT_BUTTON){
+        glScalef(zoomfacor,zoomfacor,0);
+    } else if (button == GLUT_RIGHT_BUTTON){
+        glScalef(1/zoomfacor,1/zoomfacor,0);
     }
-    tree->build();
 }
 int main(int argc, char * argv[])
 {
@@ -92,6 +98,7 @@ int main(int argc, char * argv[])
     glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
     glutDisplayFunc(render);
     glutIdleFunc(update);
+    glutMouseFunc(mouse);
     
     //Init rand 128923842
     srand(seed);
@@ -100,7 +107,7 @@ int main(int argc, char * argv[])
     glTranslatef(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0);
     
     //Init Tree
-    tree = new QuadTree(900,gravitation_constant, theta);
+    tree = new QuadTree(10000,gravitation_constant, theta, timestep);
     
     //creating random particle data
     for (int i = 0; i < particles.size(); i++){
@@ -120,12 +127,12 @@ int main(int argc, char * argv[])
         std::cout << x << " " << y <<"\n";
         particles[i] = Particle(x,y,0,0,mass,2);
     }
+    particles[1] = Particle(-300,-200,0,0,100*max_mass,20);
+    particles[0] = Particle(233,130,0,0,100*max_mass,20);
     //linking particle data to tree
     tree->setParticles(&particles);
-    
-    //build tree
-    tree->build();
-    
+    tree->forward();
+    tree->forward();
     Node* n = (tree->getRoot());
     glutMainLoop();
     return 0;

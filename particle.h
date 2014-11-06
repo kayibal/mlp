@@ -15,6 +15,8 @@
 class Particle:public point{
     float fx;
     float fy;
+    float vx;
+    float vy;
     float mass;
     float radius;
     std::array<point*,4> previousPos;
@@ -27,6 +29,8 @@ public:
     ~Particle();
     float getFx();
     float getFy();
+    float getVx();
+    float getVy();
     void setFx(float xp);
     void setFy(float yp);
     float getMass();
@@ -39,7 +43,11 @@ public:
     void move(float h, int mode);
     void addForce(point* position, float mass, float g);
     void addForce(Particle* p, float g);
+    void updateVelocity(float h);
+    void updatePos(float h);
     void print();
+    void setVx(float xp);
+    void setVy(float yp);
 };
 
 

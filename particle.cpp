@@ -20,6 +20,18 @@ void Particle::setFx(float xp){
 void Particle::setFy(float yp){
     fy = yp;
 }
+float Particle::getVx(){
+    return vx;
+}
+float Particle::getVy(){
+    return vy;
+}
+void Particle::setVx(float xp){
+    vx = xp;
+}
+void Particle::setVy(float yp){
+    vy = yp;
+}
 float Particle::getMass(){
     return mass;
 }
@@ -58,7 +70,15 @@ void Particle::savePosition(float x, float y){
     previousPos[1] = previousPos[0];
     previousPos[0] = new point(x,y);
 }
+void Particle::updateVelocity(float h){
+    vx += fx/mass * h;
+    vy += fy/mass * h;
+}
 
+void Particle::updatePos(float h){
+    x += vx*h;
+    y += vy*h;
+}
 void Particle::move(float h, int mode){
     float old_x = x;
     float old_y = y;
@@ -90,7 +110,7 @@ void Particle::move(float h, int mode){
 
 void Particle::addForce(point* p, float pmass, float g){
     if(x != p->getX() | y != p->getY()){
-        float scale = g*(mass*pmass)/pow(p->distance(*this),2);
+        float scale = -g*(mass*pmass)/pow(p->distance(*this),2);
         point force = (*this - *p)*scale;
         fx = force.getX();
         fy = force.getY();
@@ -102,7 +122,7 @@ void Particle::addForce(point* p, float pmass, float g){
 void Particle::addForce(Particle* p, float g){
     //#warning use pointers fort p here to save time
     if(x != p->getX() | y != p->getY()){
-        float scale = g*(mass*p->getMass())/pow(p->distance(*this),2);
+        float scale = -g*(mass*p->getMass())/pow(p->distance(*this),2);
         point force = (*this - *p)*scale;
         fx = force.getX();
         fy = force.getY();
