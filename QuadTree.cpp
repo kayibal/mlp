@@ -35,20 +35,33 @@ void QuadTree::updateForce(Particle* p, Node* current){
 int QuadTree::getCalculations(){
     return calculations;
 }
-/*
+
 void QuadTree::computeMass(Node* n){
+    std::cout << "computeMass \n";
     if(n->getParticle() != nullptr){
         //external node
         Particle* p = n->getParticle();
         n->setMass(p->getMass());
         n->setCenterOfMass(p->getX(), p->getY());
     } else {
-        for(int i = 0; i < j; i++){
-            
+        for(int i = 0; i < 4; i++){
+            computeMass(n->getChild(i));
         }
+        float mass = 0;
+        for (int i = 0; i < 4; i++){
+            mass += n->getChild(i)->getMass();
+        }
+        point com(0,0);
+        for (int i = 0; i < 4; i++){
+            point* p = n->getChild(i)->getCenterOfMass();
+            float p_mass = n->getChild(i)->getMass();
+            com = com + (*p)*p_mass;
+            com = com * (1/mass);
+        }
+        n->setMass(mass);
+        n->setCenterOfMass(com.getX(),com.getY());
     }
 }
-*/
 void QuadTree::updateForce(Particle* p){
     p->setFx(0);
     p->setFy(0);
@@ -110,6 +123,8 @@ void QuadTree::build(){
             std::cout << &i->getX() << " " <<"\n";
             insertParticle(*i);
         }*/
+        std::cout << "computing masses \n";
+        computeMass(root);
     } else {
         throw "particles are not set exception";
     }

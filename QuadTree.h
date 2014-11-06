@@ -29,6 +29,7 @@ public:
     void updateForces();
     void updateForce(Particle* p, Node* current);
     void updateForce(Particle* p);
+    void computeMass(Node* n);
     std::vector<Particle>* getParticles();
     int getCalculations();
     void setParticles(std::vector<Particle>* particles);

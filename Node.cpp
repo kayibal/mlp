@@ -92,6 +92,7 @@ void Node::insertParticle(Particle* new_p){
             
         }
         #warning not correct
+        /*
         //update total mass
         mass += new_p->getMass();
         //Update center of mass of node
@@ -102,7 +103,7 @@ void Node::insertParticle(Particle* new_p){
         centerOfMass.setY(comy);
         centerOfMass = centerOfMass*(1/totalMass);
         //std::cout << "Node inserted\n";
-        
+        */
     } else {
         //std::cout << "recursive case: " << child[index]->getParticle()->getX() <<" " << child[index]->getParticle()->getY() <<"\n";
         child[index]->insertParticle(new_p);

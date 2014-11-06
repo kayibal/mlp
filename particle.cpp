@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Alan Höng. All rights reserved.
 //
 
-#include "Particle.h"
+#include "particle.h"
 
 float Particle::getFx(){
     return fx;
