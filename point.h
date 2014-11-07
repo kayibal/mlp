@@ -10,29 +10,26 @@
 #define ParticleSystem_point_h
 
 #include <math.h>
-
-
-class point{
+#include "Vector3D.h"
+class point:public Vector3D{
 protected:
-    float x;
-    float y;
-    float z;
+    double mass;
 public:
     point();
-    point(float xp, float yp);
-    point(float xp, float yp, float zp);
-    void setX(float xp);
-    void setY(float yp);
-    void setZ(float zp);
-    float getX();
-    float getY();
-    float getZ();
-    float distance(point p1);
-    void scale(float s);
+    point(double xp, double yp);
+    point(double xp, double yp, double zp);
+    void setX(double xp);
+    void setY(double yp);
+    void setZ(double zp);
+    double getX();
+    double getY();
+    double getZ();
+    double distance(point& p1);
+    void scale(double s);
     point operator+(const point& right);
     point operator-(const point& right);
-    float operator*(const point& right);
-    point operator*(const float& right);
+    double operator*(const point& right);
+    point operator*(const double& right);
 };
 
 

@@ -13,41 +13,37 @@
 #include "point.h"
 #include <array>
 class Particle:public point{
-    float fx;
-    float fy;
-    float vx;
-    float vy;
-    float mass;
-    float radius;
+    double fx;
+    double fy;
+    double vx;
+    double vy;
+    double mass;
+    double radius;
     std::array<point*,4> previousPos;
-private:
-    float adamBashForth(float y, float h, float i, float i1, float i2, float i3);
-    float verletMethod(float h, float x, float x1, float a);
 public:
     Particle();
-    Particle(float x, float y, float fx, float fy, float mass, float radius);
+    Particle(double x, double y, double fx, double fy, double mass, double radius);
     ~Particle();
-    float getFx();
-    float getFy();
-    float getVx();
-    float getVy();
-    void setFx(float xp);
-    void setFy(float yp);
-    float getMass();
-    float getRadius();
-    void setMass(float mp);
-    void setRadius(float rp);
+    double getFx();
+    double getFy();
+    double getVx();
+    double getVy();
+    void setFx(double xp);
+    void setFy(double yp);
+    double getMass();
+    double getRadius();
+    void setMass(double mp);
+    void setRadius(double rp);
     point* getPreviousPos();
-    void setPreviousPos(int i, float fxp, float fyp);
-    void savePosition(float x, float y);
-    void move(float h, int mode);
-    void addForce(point* position, float mass, float g);
-    void addForce(Particle* p, float g);
-    void updateVelocity(float h);
-    void updatePos(float h);
+    void setPreviousPos(int i, double fxp, double fyp);
+    void savePosition(double x, double y);
+    void addForce(point* position, double mass, double g);
+    void addForce(Particle* p, double g);
+    void updateVelocity(double h);
+    void updatePos(double h);
     void print();
-    void setVx(float xp);
-    void setVy(float yp);
+    void setVx(double xp);
+    void setVy(double yp);
 };
 
 

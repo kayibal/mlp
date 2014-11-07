@@ -8,46 +8,46 @@
 
 #include "particle.h"
 
-float Particle::getFx(){
+double Particle::getFx(){
     return fx;
 }
-float Particle::getFy(){
+double Particle::getFy(){
     return fy;
 }
-void Particle::setFx(float xp){
+void Particle::setFx(double xp){
     fx = xp;
 }
-void Particle::setFy(float yp){
+void Particle::setFy(double yp){
     fy = yp;
 }
-float Particle::getVx(){
+double Particle::getVx(){
     return vx;
 }
-float Particle::getVy(){
+double Particle::getVy(){
     return vy;
 }
-void Particle::setVx(float xp){
+void Particle::setVx(double xp){
     vx = xp;
 }
-void Particle::setVy(float yp){
+void Particle::setVy(double yp){
     vy = yp;
 }
-float Particle::getMass(){
+double Particle::getMass(){
     return mass;
 }
-float Particle::getRadius(){
+double Particle::getRadius(){
     return radius;
 }
-void Particle::setMass(float mp){
+void Particle::setMass(double mp){
     mass = mp;
 }
-void Particle::setRadius(float rp){
+void Particle::setRadius(double rp){
     radius = rp;
 }
 point* Particle::getPreviousPos(){
     return previousPos[0];
 }
-void Particle::setPreviousPos(int i, float fxp, float fyp){
+void Particle::setPreviousPos(int i, double fxp, double fyp){
     if (i > 0 & i <4){
         previousPos[i] = new point(fxp,fyp);
     } else {
@@ -55,62 +55,26 @@ void Particle::setPreviousPos(int i, float fxp, float fyp){
     }
 }
 
-float Particle::adamBashForth(float y, float h, float i, float i1, float i2, float i3){
-    return y + h/24*(55*i - 59*i1 + 37*i2 -9*i3);
-}
-
-float Particle::verletMethod(float h, float x, float x1, float a){
-    return 2*x - x1 + a*h*h;
-}
-
-void Particle::savePosition(float x, float y){
+void Particle::savePosition(double x, double y){
     if(previousPos[3] != NULL) free(previousPos[3]);
     previousPos[3] = previousPos[2];
     previousPos[2] = previousPos[1];
     previousPos[1] = previousPos[0];
     previousPos[0] = new point(x,y);
 }
-void Particle::updateVelocity(float h){
+void Particle::updateVelocity(double h){
     vx += fx/mass * h;
     vy += fy/mass * h;
 }
 
-void Particle::updatePos(float h){
+void Particle::updatePos(double h){
     x += vx*h;
     y += vy*h;
 }
-void Particle::move(float h, int mode){
-    float old_x = x;
-    float old_y = y;
-    if(mode == 1){
-        //Not enough data to use adams bashforth use verlet
-        #warning adams bashfort not working properly
-        if(previousPos[3] == nullptr){
-            if(previousPos[0] == nullptr){
-                previousPos[0] = new point(x+fx,y+fy);
-            }
-            x = verletMethod(h, x, previousPos[0]->getX(), fx/mass);
-            y = verletMethod(h, y, previousPos[0]->getY(), fy/mass);
-        } else {
-            x = adamBashForth(x, h, previousPos[0]->getX(), previousPos[1]->getX(), previousPos[2]->getX(), previousPos[3]->getX());
-            y = adamBashForth(y, h, previousPos[0]->getY(), previousPos[1]->getY(), previousPos[2]->getY(), previousPos[3]->getY());
-        }
-        savePosition(old_x, old_y);
-    } else {
-        //Using verlet method
-        if(previousPos[0] == nullptr){
-            previousPos[0] = new point(x+fx,y+fy);
-        }
-        x = verletMethod(h, x, previousPos[0]->getX(), fx/mass);
-        y = verletMethod(h, y, previousPos[0]->getY(), fy/mass);
-        free(previousPos[0]);
-        previousPos[0] =  new point(old_x,old_y);
-    }
-}
 
-void Particle::addForce(point* p, float pmass, float g){
+void Particle::addForce(point* p, double pmass, double g){
     if(x != p->getX() | y != p->getY()){
-        float scale = -g*(mass*pmass)/pow(p->distance(*this),2);
+        double scale = -g*(mass*pmass)/(pow(p->distance(*this),2));
         point force = (*this - *p)*scale;
         fx = force.getX();
         fy = force.getY();
@@ -119,17 +83,17 @@ void Particle::addForce(point* p, float pmass, float g){
     }
 }
 
-void Particle::addForce(Particle* p, float g){
+void Particle::addForce(Particle* p, double g){
     //#warning use pointers fort p here to save time
     if(x != p->getX() | y != p->getY()){
-        float scale = -g*(mass*p->getMass())/pow(p->distance(*this),2);
+        double scale = -g*(mass*p->getMass())/(pow(p->distance(*this),2));
         point force = (*this - *p)*scale;
         fx = force.getX();
         fy = force.getY();
     }
 }
 
-Particle::Particle(float xp, float yp, float fxp, float fyp, float pmass, float pradius):point(xp,yp){
+Particle::Particle(double xp, double yp, double fxp, double fyp, double pmass, double pradius):point(xp,yp){
     fx = fxp;
     fy = fyp;
     mass = pmass;

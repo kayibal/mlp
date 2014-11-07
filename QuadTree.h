@@ -16,29 +16,30 @@ class QuadTree{
     Node* root;
     int height;
     int size;
-    float length;
-    float gravitation_constant;
-    float theta;
-    float dt;
+    double length;
+    double gravitation_constant;
+    double theta;
+    double dt;
     int calculations;
     std::vector<Particle>* particles;
-public:
-    QuadTree(float l, float g, float t, float timestep);
-    ~QuadTree();
+private:
     void build();
     void insertParticle(Particle* p);
     void updateForces();
     void updateForce(Particle* p, Node* current);
     void updateForce(Particle* p);
-    void updateVelocities(float dt);
-    void updatePositions(float dt);
+    void updateVelocities(double dt);
+    void updatePositions(double dt);
     void leapfrog();
     void computeMass(Node* n);
     std::vector<Particle>* getParticles();
-    int getCalculations();
-    void setParticles(std::vector<Particle>* particles);
     Node* getRoot();
+public:
+    QuadTree(double l, double g, double t, double timestep);
+    ~QuadTree();
     void forward();
-    
+    void setParticles(std::vector<Particle>* particles);
+    int getCalculations();
+    point getCenter();
 };
 #endif /* defined(__ParticleSystem__QuadTree__) */

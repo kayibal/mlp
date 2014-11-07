@@ -17,14 +17,14 @@
 enum quad {NW,SW,SE,NE};
 
 class Node{
-    float xmid;
-    float ymid;
+    double xmid;
+    double ymid;
     //TODO: change this to length must be quadratric
-    float heigth;
-    float width;
+    double heigth;
+    double width;
     
     point centerOfMass;
-    float mass;
+    double mass;
     
     Particle* p;
     
@@ -33,7 +33,7 @@ class Node{
     
 public:
     Node();
-    Node(float xmidp, float ymidp, float h, float w);
+    Node(double xmidp, double ymidp, double h, double w);
     ~Node();
     void insertParticle(Particle* p);
     bool isInside(point p);
@@ -41,10 +41,10 @@ public:
     short getChildCount();
     Node* getChild(int i);
     point* getCenterOfMass();
-    float getLength();
+    double getLength();
     Particle* getParticle();
-    float getMass();
-    void setMass(float m);
-    void setCenterOfMass(float x, float y);
+    double getMass();
+    void setMass(double m);
+    void setCenterOfMass(double x, double y);
 };
 #endif /* defined(__ParticleSystem__Node__) */

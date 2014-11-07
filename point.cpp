@@ -12,41 +12,46 @@ point::point(){
     y = 0;
     z = 0;
 }
-point::point(float xp, float yp){
+point::point(double xp, double yp){
     x = xp;
     y = yp;
     z = 0;
     
 }
-point::point(float xp, float yp, float zp){
+point::point(double xp, double yp, double zp){
     x = xp;
     y = yp;
     z = zp;
     
 }
-void point::setX(float xp){
+void point::setX(double xp){
     x = xp;
     
 }
-void point::setY(float yp){
+void point::setY(double yp){
     y = yp;
     
 }
-void point::setZ(float zp){
+void point::setZ(double zp){
     z = zp;
     
 }
-float point::getX(){
+double point::getX(){
     return x;
 }
-float point::getY(){
+double point::getY(){
     return y;
 }
-float point::getZ(){
+double point::getZ(){
     return z;
 }
-float point::distance(point p1){
+double point::distance(point &p1){
     return sqrt(pow((x-p1.getX()),2) + pow((y-p1.getY()),2));
+}
+void point::scale(double s){
+    x *= s;
+    y *= s;
+    z *= z;
 }
 point point::operator+(const point& right){
     point sum(0.0,0.0);
@@ -62,19 +67,14 @@ point point::operator-(const point& right){
     tmp.setZ(z-right.z);
     return tmp;
 }
-float point::operator*(const point& right){
+double point::operator*(const point& right){
     return (x*right.x + y*right.y + z*right.z);
     
 }
-point point::operator*(const float& right){
+point point::operator*(const double& right){
     point tmp(0.0,0.0);
     tmp.setX(x*right);
     tmp.setY(y*right);
     tmp.setZ(z*right);
     return tmp;
-}
-void point::scale(float s){
-    x *= s;
-    y *= s;
-    z *= s;
 }
