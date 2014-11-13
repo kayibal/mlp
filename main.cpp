@@ -24,23 +24,23 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #endif
-
+using namespace ksh;
 static const int SCREEN_WIDTH = 900;
 static const int SCREEN_HEIGHT= 600;
 using namespace std;
-QuadTree* tree;
+QuadTree<Particle>* tree;
 //Standard Configurations
-double timestep = 1;
+double timestep = 0.5;
 double gravitation_constant = 6.67e-8;
 int n = 1000;
 int max_mass = 100000;
-int seed = 1334242;
-double theta = 1;
-int fc = 1;
+int seed = 24234;
+double theta = 0.3;
+int fc = -1;
 double zoomTimes = 1;
 double global_x = 0;
 double global_y = 0;
-
+bool showVectors = false;
 double zoomfacor = 0.1;
 
 std::vector<Particle> particles(n);
@@ -59,11 +59,33 @@ void DrawCircle(double cx, double cy, double r, int num_segments)
 	}
 	glEnd();
 }
+//  Return       Return  final Return  Input      Input      Name           Parameter
+std::function< std::function<double (point)> (point) > distanceTo(std :: function<double (point,point)> op){
+    return [=] (point x){
+        return [=] (point y){ return op(x,y);
+        };
+    };
+};
 
-void drawParticle(point p, double r){
-    //a particle will be a simple rectangle for now
+void drawParticle(Particle p, double r){
     glColor3f(1.0f, 1.0f, 1.0f);
     DrawCircle(p.getX(),p.getY(),r,20);
+    if (showVectors == true){
+    //draw force vector
+        glColor3f(1.0f,0.0f,0.0f);
+        glLineWidth(2);
+        glBegin(GL_LINES);
+            glVertex2f(p.getX(),p.getY());
+            glVertex2f(p.getX()+p.getFx()*100/p.getMass(),p.getY()+p.getFy()*100/p.getMass());
+        glEnd();
+        
+        //show velocity vector
+        glColor3f(0.0f,1.0f,0.0f);
+        glBegin(GL_LINES);
+            glVertex2f(p.getX(),p.getY());
+            glVertex2f(p.getX()+p.getVx()*4,p.getY()+p.getVy()*4);
+        glEnd();
+    }
 }
 void render()
 {
@@ -109,6 +131,26 @@ void move(int key, int x, int y){
     }
 }
 
+auto sumOverAttr= [](std::vector<Particle> v, std::function<double(Particle*)>attr){
+    double temp = 0;
+    for(int i = 0; i < particles.size(); i++){
+        temp += attr(&particles[i]);
+    }
+    return temp;
+};
+
+void keyboard(unsigned char key, int ,int y){
+    if (key == 'V' | key == 'v'){
+        if (showVectors){
+            showVectors = false;
+        } else {
+            showVectors = true;
+        }
+    } else if (key == 'F' | key == 'f'){
+        fc *= -1;
+    }
+}
+
 int main(int argc, char * argv[])
 {
     if(argc == 8){
@@ -119,6 +161,7 @@ int main(int argc, char * argv[])
         max_mass = (int)strtof(argv[5], NULL);
         theta = strtof(argv[6], NULL);
         fc = strtof(argv[7], NULL);
+        particles.resize(n);
         
     } else {
         char res;
@@ -137,10 +180,11 @@ int main(int argc, char * argv[])
     glLoadIdentity();
     glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
     glMatrixMode(GL_MODELVIEW);
-    glutDisplayFunc(render);
-    glutIdleFunc(update);
-    glutMouseFunc(mouse);
-    glutSpecialFunc(move);
+    glutDisplayFunc(&render);
+    glutIdleFunc(&update);
+    glutMouseFunc(&mouse);
+    glutKeyboardFunc(&keyboard);
+    glutSpecialFunc(&move);
     
     //Init rand 128923842
     srand(seed);
@@ -149,7 +193,7 @@ int main(int argc, char * argv[])
     glTranslatef(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0);
     
     //Init Tree
-    tree = new QuadTree(10000,gravitation_constant, theta, timestep);
+    tree = new QuadTree<Particle>(10000,gravitation_constant, theta, timestep);
     
     //creating random particle data
     for (int i = 0; i < particles.size(); i++){
@@ -161,8 +205,8 @@ int main(int argc, char * argv[])
         double y = r2 * (SCREEN_HEIGHT) - SCREEN_HEIGHT/2;
         double mass = rand() % max_mass;
         double r = (mass / max_mass)*5;
-        double vx = r3;
-        double vy = r4;
+        double vx = r3*2;
+        double vy = r4*2;
         for (int j = 0; j < i; j++) {
             double x2 = particles[j].getX();
             double y2 = particles[j].getY();
@@ -170,7 +214,7 @@ int main(int argc, char * argv[])
                 std::cout << "duplicate";
             }
         }
-        std::cout << x << " " << y <<"\n";
+        //std::cout << x << " " << y <<"\n";
         particles[i] = Particle(x,y,0,0,mass,r);
         particles[i].setVx(vx);
         particles[i].setVy(vy);
@@ -180,7 +224,18 @@ int main(int argc, char * argv[])
     //linking particle data to tree
     tree->setParticles(&particles);
 
-    std::cout << "Simulation runnning \n" << "use arrow keys to move and left and right mousebutton to zoom\n";
+    std::cout << "Simulation runnning \n" << "use arrow keys to navigate and left and right mousebutton to zoom\n" << "Press V to show vectors (green: velocity, red: acceleration)\n" << "Press F to follow center of mass\n";
+    std::cout << "Total system mass: " << sumOverAttr(particles, [](Particle* p){
+        return p->getMass();
+    }) << "\n";
+    
+    //currying
+    point c = tree->getCenter();
+    point b(0,0);
+    auto distanceToCenter = distanceTo([&c](point x, point y){ return (c.distance(y));});
+    double a = distanceToCenter(c)(b);
+    std::cout << a;
+    
     glutMainLoop();
     return 0;
 }

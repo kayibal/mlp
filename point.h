@@ -11,6 +11,9 @@
 
 #include <math.h>
 #include "Vector3D.h"
+
+namespace ksh{
+
 class point:public Vector3D{
 protected:
     double mass;
@@ -32,5 +35,5 @@ public:
     point operator*(const double& right);
 };
 
-
+}
 #endif

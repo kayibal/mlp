@@ -11,6 +11,7 @@
 
 #include <math.h>
 #include <iostream>
+namespace ksh{
 class Vector3D{
 protected:
     double x;
@@ -26,4 +27,5 @@ public:
         z *= s;
     }
 };
+}
 #endif /* defined(__ParticleSystem__VectorND__) */

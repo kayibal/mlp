@@ -7,7 +7,7 @@
 //
 
 #include "particle.h"
-
+using namespace ksh;
 double Particle::getFx(){
     return fx;
 }
@@ -44,6 +44,7 @@ void Particle::setMass(double mp){
 void Particle::setRadius(double rp){
     radius = rp;
 }
+/*
 point* Particle::getPreviousPos(){
     return previousPos[0];
 }
@@ -62,6 +63,7 @@ void Particle::savePosition(double x, double y){
     previousPos[1] = previousPos[0];
     previousPos[0] = new point(x,y);
 }
+ */
 void Particle::updateVelocity(double h){
     vx += fx/mass * h;
     vy += fy/mass * h;
@@ -98,26 +100,16 @@ Particle::Particle(double xp, double yp, double fxp, double fyp, double pmass, d
     fy = fyp;
     mass = pmass;
     radius = pradius;
-    for (int i = 0; i < 4; i++){
-        previousPos[i] = nullptr;
-    }
 }
 Particle::Particle(){
     fx = 0;
     fy = 0;
     mass = -1;
     radius = 0;
-    for (int i = 0; i < 4; i++){
-        previousPos[i] = nullptr;
-    }
+
 }
 Particle::~Particle(){
-    for (int i = 0; i < 4; i++){
-        if(previousPos[i] != nullptr){
-            delete previousPos[i];
-        }
-        previousPos.~array();
-    }
+
 }
 void Particle::print(){
     std::cout << "x: " << x << "\n";

@@ -12,6 +12,7 @@
 #include <iostream>
 #include "point.h"
 #include <array>
+namespace ksh{
 class Particle:public point{
     double fx;
     double fy;
@@ -19,7 +20,7 @@ class Particle:public point{
     double vy;
     double mass;
     double radius;
-    std::array<point*,4> previousPos;
+    //std::array<point*,4> previousPos;
 public:
     Particle();
     Particle(double x, double y, double fx, double fy, double mass, double radius);
@@ -34,9 +35,11 @@ public:
     double getRadius();
     void setMass(double mp);
     void setRadius(double rp);
+    /*
     point* getPreviousPos();
     void setPreviousPos(int i, double fxp, double fyp);
     void savePosition(double x, double y);
+     */
     void addForce(point* position, double mass, double g);
     void addForce(Particle* p, double g);
     void updateVelocity(double h);
@@ -45,6 +48,6 @@ public:
     void setVx(double xp);
     void setVy(double yp);
 };
-
+}
 
 #endif /* defined(__ParticleSystem__particle__) */

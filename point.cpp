@@ -5,8 +5,8 @@
 //  Created by Alan Höng on 17/10/14.
 //  Copyright (c) 2014 Alan Höng. All rights reserved.
 //
-
 #include "point.h"
+using namespace ksh;
 point::point(){
     x = 0;
     y = 0;
